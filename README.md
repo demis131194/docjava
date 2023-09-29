@@ -45,3 +45,14 @@ AVAILABLE COMMANDS ...
 
 shell:>help help - info about help
 ```
+
+## Создаем `usersWithMeals.xml` данные пользователей с едой и схему `usersWithMeals.xsd` 
+> commit: 1_xml_xsd
+
+- Если с XML не имели дело, ознакомтесь с основами: 
+  - [Что такое XML](https://habr.com/ru/articles/524288/)
+- Дополнительно:
+  - [Attribute vs Element](http://stackoverflow.com/questions/33746/xml-attribute-vs-xml-element#33757)
+  - [Лекции по XML](http://genberm.narod.ru/xml/lections.html)
+
+Схему можно сгенерировать в IDEA (в контекстном меню в xml файле -> _Generate XSD Schema from XML File..._) и поправить вручную
