@@ -56,3 +56,20 @@ shell:>help help - info about help
   - [Лекции по XML](http://genberm.narod.ru/xml/lections.html)
 
 Схему можно сгенерировать в IDEA (в контекстном меню в xml файле -> _Generate XSD Schema from XML File..._) и поправить вручную
+
+## Validate XML files against XSD (XML Schema)
+> commit: 2_xsd_validate
+
+- Создем общий класс класс `Schemas` (его можно использовать в своих приложениях без изменений) и специфичный для нашего приложения `SchemaUtil`
+- Вызываем `SchemaUtil.validate` из `Commands` и в каталоге `scr\test` создаем тесты
+- Для запуска JUnit тестов прямо [в IDEA ниже версии 2023.2](https://youtrack.jetbrains.com/issue/IDEA-231927) в pom требуется добавить `junit-platform-launcher`
+
+- [Validate an XML File Against an XSD File](https://www.baeldung.com/java-validate-xml-xsd)
+
+```
+shell:>help xsd
+shell:>xsd -i in/usersWithMeals.xml -s in/usersWithMeals.xsd
+shell:>xsd -i in/badXmlFile.xml -s in/usersWithMeals.xsd
+```
+
+## [Process XML file via JAXB](https://javaops.ru/view/docjava/jaxb)
