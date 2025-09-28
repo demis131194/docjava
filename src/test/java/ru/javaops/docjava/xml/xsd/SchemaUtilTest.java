@@ -8,13 +8,14 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.javaops.docjava.TestData.inputFile;
 
 class SchemaUtilTest {
     private static final File xmlSchema = new File("in/usersWithMeals.xsd");
 
     @Test
     void validateOK() throws IOException, SAXException {
-        SchemaUtil.validate(new File("in/usersWithMeals.xml"), xmlSchema);
+        SchemaUtil.validate(inputFile, xmlSchema);
     }
 
     @Test

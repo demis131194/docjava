@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @XmlRootElement(name = "Meals", namespace = "http://javaops.ru")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Meals {
     @XmlElement(name = "Meal", namespace = "http://javaops.ru")
     protected List<Meal> meal = new ArrayList<>();

@@ -1,6 +1,7 @@
 package ru.javaops.docjava.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @XmlRootElement(name = "User", namespace = "http://javaops.ru")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @XmlAttribute(name = "name", required = true)
     protected String name;

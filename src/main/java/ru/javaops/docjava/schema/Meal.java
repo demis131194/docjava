@@ -2,6 +2,7 @@ package ru.javaops.docjava.schema;
 
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @XmlRootElement(name = "Meal", namespace = "http://javaops.ru")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Meal {
     @XmlValue
     protected String value;
