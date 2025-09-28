@@ -5,12 +5,14 @@ import jakarta.xml.bind.JAXBException;
 import lombok.experimental.UtilityClass;
 import ru.javaops.docjava.schema.ObjectFactory;
 import ru.javaops.docjava.schema.UsersWithMeals;
+import ru.javaops.docjava.util.MealsUtil;
 import ru.javaops.docjava.xml.xsd.Schemas;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
+import java.util.Map;
 
 @UtilityClass
 public class JaxbUtil {
@@ -24,6 +26,18 @@ public class JaxbUtil {
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static UsersWithMeals process(File inputXml, Map<String, Object> params) throws IOException, JAXBException {
+        UsersWithMeals users = unmarshalAndFilter(inputXml, params);
+        System.out.println("JAXB processing completed successfully");
+        return users;
+    }
+
+    public static UsersWithMeals unmarshalAndFilter(File inputXml, Map<String, Object> params) throws IOException, JAXBException {
+        UsersWithMeals users = unmarshal(inputXml);
+        MealsUtil.filterAndAddExcess(users, params);
+        return users;
     }
 
     public static UsersWithMeals unmarshal(File inputXml) throws IOException, JAXBException {
