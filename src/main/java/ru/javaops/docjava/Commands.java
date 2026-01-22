@@ -5,6 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.xml.sax.SAXException;
+import ru.javaops.docjava.pdf.PdfFopUtil;
 import ru.javaops.docjava.xml.jaxb.JaxbUtil;
 import ru.javaops.docjava.xml.stax.StaxUtil;
 import ru.javaops.docjava.xml.xpath.XPathUtil;
@@ -65,10 +66,8 @@ public class Commands {
     public void pdfFopConvert(
             @ShellOption(value = {"input", "-i"}, help = "Input file") File inputFile,
             @ShellOption(value = {"template", "-t"}, help = "Transform template file") File templateFile,
-            @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) {
-        System.out.println("\nInput file: " + inputFile.getAbsolutePath());
-        System.out.println("Transform template file: " + templateFile);
-        System.out.println("Output file: " + outputFile.getAbsolutePath());
+            @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) throws TransformerException {
+        PdfFopUtil.convert(inputFile, templateFile, outputFile);
     }
 
     @ShellMethod(key = "iText", value = "Convert XML to PDF via iText")
