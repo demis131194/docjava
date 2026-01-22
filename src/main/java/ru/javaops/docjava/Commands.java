@@ -9,8 +9,10 @@ import ru.javaops.docjava.xml.jaxb.JaxbUtil;
 import ru.javaops.docjava.xml.stax.StaxUtil;
 import ru.javaops.docjava.xml.xpath.XPathUtil;
 import ru.javaops.docjava.xml.xsd.SchemaUtil;
+import ru.javaops.docjava.xml.xslt.XsltUtil;
 
 import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
@@ -55,11 +57,8 @@ public class Commands {
             @ShellOption(value = {"input", "-i"}, help = "Input file") File inputFile,
             @ShellOption(value = {"xsl", "-x"}, help = "XSL transformation file") File xslFile,
             @ShellOption(value = {"filter", "-f"}, help = "Filter params", defaultValue = "") List<String> params,
-            @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) {
-        System.out.println("\nInput file: " + inputFile.getAbsolutePath());
-        System.out.println("XSL transformation file: " + xslFile.getAbsolutePath());
-        System.out.println("Filter params: " + params.toString());
-        System.out.println("Output file: " + outputFile.getAbsolutePath());
+            @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) throws TransformerException {
+        XsltUtil.transform(inputFile, xslFile, outputFile);
     }
 
     @ShellMethod(key = "pdf-fop", value = "Convert XML to PDF via Apache FOP")
