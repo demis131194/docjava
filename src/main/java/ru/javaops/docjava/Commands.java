@@ -6,6 +6,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.xml.sax.SAXException;
+import ru.javaops.docjava.excel.ExcelPoiUtil;
 import ru.javaops.docjava.pdf.ITextPdfUtil;
 import ru.javaops.docjava.pdf.PdfFopUtil;
 import ru.javaops.docjava.xml.jaxb.JaxbUtil;
@@ -85,10 +86,7 @@ public class Commands {
             @ShellOption(value = {"input", "-i"}, help = "Input file") File inputFile,
             @ShellOption(value = {"template", "-t"}, help = "Transform template file") File templateFile,
             @ShellOption(value = {"filter", "-f"}, help = "Filter params", defaultValue = "") List<String> params,
-            @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) {
-        System.out.println("\nInput file: " + inputFile.getAbsolutePath());
-        System.out.println("Transform template file: " + templateFile);
-        System.out.println("Filter params: " + params.toString());
-        System.out.println("Output file: " + outputFile.getAbsolutePath());
+            @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) throws JAXBException, IOException {
+        ExcelPoiUtil.convert(inputFile, templateFile, outputFile, parseParams(params));
     }
 }
