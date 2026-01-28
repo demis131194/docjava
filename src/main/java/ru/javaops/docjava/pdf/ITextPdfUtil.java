@@ -13,7 +13,6 @@ import ru.javaops.docjava.schema.Meals;
 import ru.javaops.docjava.schema.RoleTypes;
 import ru.javaops.docjava.schema.User;
 import ru.javaops.docjava.schema.UsersWithMeals;
-import ru.javaops.docjava.util.Util;
 import ru.javaops.docjava.xml.jaxb.JaxbUtil;
 
 import java.io.File;
@@ -24,7 +23,7 @@ import java.util.stream.Stream;
 
 import static ru.javaops.docjava.pdf.ITextPdfConverter.DARK_GREEN;
 import static ru.javaops.docjava.pdf.ITextPdfConverter.createCell;
-import static ru.javaops.docjava.util.Util.DATE_TIME_FORMATTER;
+import static ru.javaops.docjava.util.Util.format;
 
 public class ITextPdfUtil {
 
@@ -64,7 +63,7 @@ public class ITextPdfUtil {
 //        https://stackoverflow.com/a/41430483/548473
         userInfo.add("Email: " + user.getEmail() + "\n")
                 .add("CaloriesPerDay: " + user.getCaloriesPerDay() + "\n")
-                .add("Registered: " + DATE_TIME_FORMATTER.format(Util.toDateTime(user.getRegistered())) + "\n")
+                .add("Registered: " + format(user.getRegistered()) + "\n")
                 .add("Roles: ")
                 .add(user.getRoles().isEmpty() ?
                         "none" :
@@ -83,7 +82,7 @@ public class ITextPdfUtil {
         if (meals != null) {
             meals.getMeal().forEach(meal -> {
                 Color color = meal.getExcess() ? DeviceRgb.RED : DARK_GREEN;
-                table.addCell(createCell(meal.getDateTime().format(DATE_TIME_FORMATTER), color));
+                table.addCell(createCell(format(meal.getDateTime()), color));
                 table.addCell(createCell(meal.getValue(), color));
                 table.addCell(createCell(String.valueOf(meal.getCalories()), color));
             });

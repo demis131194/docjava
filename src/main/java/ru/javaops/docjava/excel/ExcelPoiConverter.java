@@ -1,6 +1,7 @@
 package ru.javaops.docjava.excel;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -14,6 +15,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static ru.javaops.docjava.excel.ApachePoiUtil.setCell;
 
 public class ExcelPoiConverter {
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
@@ -80,67 +83,5 @@ public class ExcelPoiConverter {
 
     public void doProcessors(Map<String, Consumer<CellAddress>> consumerMap) {
         processors.forEach(p -> consumerMap.get(p.key).accept(p.cellAddress));
-    }
-
-    public static Cell getCell(Sheet sheet, CellAddress cellAddress) {
-        return sheet.getRow(cellAddress.getRow()).getCell(cellAddress.getColumn());
-    }
-
-    public static void setCell(Sheet sheet, CellAddress cellAddress, Object value, CellStyle style) {
-        Cell cell = getCell(sheet, cellAddress);
-        cell.setCellValue(value.toString());
-        if (style != null) {
-            cell.setCellStyle(style);
-        }
-    }
-
-    public static CellAddress nextRow(CellAddress ca, int shift) {
-        return new CellAddress(ca.getRow() + shift, ca.getColumn());
-    }
-
-    public static CellAddress nextCell(CellAddress ca, int shift) {
-        return new CellAddress(ca.getRow(), ca.getColumn() + shift);
-    }
-
-    //  https://stackoverflow.com/a/49153445/548473
-    public static void insertRow(Sheet sheet, int rowNum) {
-        Row templateRow = sheet.getRow(rowNum);
-        if (sheet.getLastRowNum() > rowNum) {
-            sheet.shiftRows(rowNum + 1, sheet.getLastRowNum(), 1);
-        }
-        Row newRow = sheet.createRow(rowNum + 1);
-        templateRow.cellIterator().forEachRemaining(
-                cell -> newRow.createCell(cell.getColumnIndex()).setCellStyle(cell.getCellStyle())
-        );
-    }
-
-    //    https://www.tabnine.com/code/java/methods/org.apache.poi.hssf.usermodel.HSSFSheet/removeRow
-    public static void removeRow(Sheet sheet, int rowNum) {
-        int lastRowNum = sheet.getLastRowNum();
-        if (rowNum >= 0 && rowNum < lastRowNum) {
-            sheet.shiftRows(rowNum + 1, lastRowNum, -1);
-        } else if (rowNum == lastRowNum) {
-            sheet.removeRow(sheet.getRow(rowNum));
-        }
-    }
-
-    //  https://stackoverflow.com/a/77197761/548473
-    public static CellStyle createColorCellStyle(Sheet sheet, CellAddress cellAddr, short color) {
-        Workbook workbook = sheet.getWorkbook();
-        CellStyle cellStyle = getCell(sheet, cellAddr).getCellStyle();
-        Font font = workbook.getFontAt(cellStyle.getFontIndex());
-        Font newFont = workbook.createFont();
-        newFont.setFontName(font.getFontName());
-        newFont.setFontHeightInPoints(font.getFontHeightInPoints());
-        newFont.setFontHeight(font.getFontHeight());
-        newFont.setBold(font.getBold());
-        newFont.setItalic(font.getItalic());
-        newFont.setUnderline(font.getUnderline());
-        newFont.setStrikeout(font.getStrikeout());
-        newFont.setColor(color);
-        CellStyle newCellStyle = workbook.createCellStyle();
-        newCellStyle.cloneStyleFrom(cellStyle);
-        newCellStyle.setFont(newFont);
-        return newCellStyle;
     }
 }

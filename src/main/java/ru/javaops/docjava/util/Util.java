@@ -3,10 +3,7 @@ package ru.javaops.docjava.util;
 import lombok.experimental.UtilityClass;
 import org.springframework.lang.Nullable;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,9 +12,17 @@ import java.util.Map;
 
 @UtilityClass
 public class Util {
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     // https://stackoverflow.com/a/77190837/548473
+    public static String format(Date date) {
+        return DATE_TIME_FORMATTER.format(toDateTime(date));
+    }
+
+    public static String format(LocalDateTime dateTime) {
+        return DATE_TIME_FORMATTER.format(dateTime);
+    }
+
     public static ZonedDateTime toDateTime(Date date) {
         return date.toInstant().atZone(ZoneId.systemDefault());
     }
