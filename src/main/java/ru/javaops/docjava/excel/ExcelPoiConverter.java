@@ -1,9 +1,6 @@
 package ru.javaops.docjava.excel;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -77,7 +74,7 @@ public class ExcelPoiConverter {
                 p.matcher.appendReplacement(sb, obj.toString());
             }
             p.matcher.appendTail(sb);
-            setCell(sheet, p.cellAddress, sb.toString());
+            setCell(sheet, p.cellAddress, sb.toString(), null);
         });
     }
 
@@ -89,8 +86,12 @@ public class ExcelPoiConverter {
         return sheet.getRow(cellAddress.getRow()).getCell(cellAddress.getColumn());
     }
 
-    public static void setCell(Sheet sheet, CellAddress cellAddress, Object value) {
-        getCell(sheet, cellAddress).setCellValue(value.toString());
+    public static void setCell(Sheet sheet, CellAddress cellAddress, Object value, CellStyle style) {
+        Cell cell = getCell(sheet, cellAddress);
+        cell.setCellValue(value.toString());
+        if (style != null) {
+            cell.setCellStyle(style);
+        }
     }
 
     public static CellAddress nextRow(CellAddress ca, int shift) {
@@ -121,5 +122,25 @@ public class ExcelPoiConverter {
         } else if (rowNum == lastRowNum) {
             sheet.removeRow(sheet.getRow(rowNum));
         }
+    }
+
+    //  https://stackoverflow.com/a/77197761/548473
+    public static CellStyle createColorCellStyle(Sheet sheet, CellAddress cellAddr, short color) {
+        Workbook workbook = sheet.getWorkbook();
+        CellStyle cellStyle = getCell(sheet, cellAddr).getCellStyle();
+        Font font = workbook.getFontAt(cellStyle.getFontIndex());
+        Font newFont = workbook.createFont();
+        newFont.setFontName(font.getFontName());
+        newFont.setFontHeightInPoints(font.getFontHeightInPoints());
+        newFont.setFontHeight(font.getFontHeight());
+        newFont.setBold(font.getBold());
+        newFont.setItalic(font.getItalic());
+        newFont.setUnderline(font.getUnderline());
+        newFont.setStrikeout(font.getStrikeout());
+        newFont.setColor(color);
+        CellStyle newCellStyle = workbook.createCellStyle();
+        newCellStyle.cloneStyleFrom(cellStyle);
+        newCellStyle.setFont(newFont);
+        return newCellStyle;
     }
 }
