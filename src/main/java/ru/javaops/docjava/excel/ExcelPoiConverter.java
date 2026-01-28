@@ -1,22 +1,46 @@
 package ru.javaops.docjava.excel;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExcelPoiConverter {
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
     private final File templateFile;
+    private final List<Placeholder> placeholders = new ArrayList<>();
 
-    public static ExcelPoiConverter of(File templateFile) {
+    public record Placeholder(Matcher matcher, CellAddress cellAddress) {
+    }
+
+    public static ExcelPoiConverter of(File templateFile) throws IOException {
         return new ExcelPoiConverter(templateFile);
     }
 
-    private ExcelPoiConverter(File templateFile) {
+    private ExcelPoiConverter(File templateFile) throws IOException {
         this.templateFile = templateFile;
+        try (Workbook workbook = new XSSFWorkbook(new FileInputStream((templateFile)))) {
+            // find all placeholders on sheet 0
+            workbook.getSheetAt(0).forEach(row ->
+                    row.forEach(cell -> {
+                        Matcher matcher = PLACEHOLDER_PATTERN.matcher(cell.getStringCellValue());
+                        if (matcher.find()) {
+                            placeholders.add(new Placeholder(matcher, cell.getAddress()));
+                        }
+                    }));
+        }
     }
 
     public void convert(File outputFile, Consumer<Workbook> workbookComposer) throws IOException {
@@ -28,5 +52,28 @@ public class ExcelPoiConverter {
                 workbook.write(outputStream);
             }
         }
+    }
+
+    public void resolvePlaceholders(Sheet sheet, Map<String, Supplier<Object>> supplierMap) {
+        placeholders.forEach(p -> {
+            p.matcher.reset();
+            // https://stackoverflow.com/questions/38376584/548473
+            StringBuilder sb = new StringBuilder();
+            while (p.matcher.find()) {
+                String key = p.matcher.group(1);
+                Object obj = supplierMap.get(key).get();
+                p.matcher.appendReplacement(sb, obj.toString());
+            }
+            p.matcher.appendTail(sb);
+            setCell(sheet, p.cellAddress, sb.toString());
+        });
+    }
+
+    public static Cell getCell(Sheet sheet, CellAddress cellAddress) {
+        return sheet.getRow(cellAddress.getRow()).getCell(cellAddress.getColumn());
+    }
+
+    public static void setCell(Sheet sheet, CellAddress cellAddress, Object value) {
+        getCell(sheet, cellAddress).setCellValue(value.toString());
     }
 }
