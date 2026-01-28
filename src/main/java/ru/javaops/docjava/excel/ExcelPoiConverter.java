@@ -1,6 +1,7 @@
 package ru.javaops.docjava.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
@@ -19,10 +20,15 @@ import java.util.regex.Pattern;
 
 public class ExcelPoiConverter {
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
+    private static final Pattern PROCESSOR_PATTERN = Pattern.compile("\\\\\\{(\\w+)}");
     private final File templateFile;
     private final List<Placeholder> placeholders = new ArrayList<>();
+    private final List<Processor> processors = new ArrayList<>();
 
     public record Placeholder(Matcher matcher, CellAddress cellAddress) {
+    }
+
+    public record Processor(String key, CellAddress cellAddress) {
     }
 
     public static ExcelPoiConverter of(File templateFile) throws IOException {
@@ -35,9 +41,15 @@ public class ExcelPoiConverter {
             // find all placeholders on sheet 0
             workbook.getSheetAt(0).forEach(row ->
                     row.forEach(cell -> {
-                        Matcher matcher = PLACEHOLDER_PATTERN.matcher(cell.getStringCellValue());
+                        String value = cell.getStringCellValue();
+                        Matcher matcher = PLACEHOLDER_PATTERN.matcher(value);
                         if (matcher.find()) {
                             placeholders.add(new Placeholder(matcher, cell.getAddress()));
+                        } else {
+                            matcher = PROCESSOR_PATTERN.matcher(value);
+                            if (matcher.find()) {
+                                processors.add(new Processor(matcher.group(1), cell.getAddress()));
+                            }
                         }
                     }));
         }
@@ -69,11 +81,45 @@ public class ExcelPoiConverter {
         });
     }
 
+    public void doProcessors(Map<String, Consumer<CellAddress>> consumerMap) {
+        processors.forEach(p -> consumerMap.get(p.key).accept(p.cellAddress));
+    }
+
     public static Cell getCell(Sheet sheet, CellAddress cellAddress) {
         return sheet.getRow(cellAddress.getRow()).getCell(cellAddress.getColumn());
     }
 
     public static void setCell(Sheet sheet, CellAddress cellAddress, Object value) {
         getCell(sheet, cellAddress).setCellValue(value.toString());
+    }
+
+    public static CellAddress nextRow(CellAddress ca, int shift) {
+        return new CellAddress(ca.getRow() + shift, ca.getColumn());
+    }
+
+    public static CellAddress nextCell(CellAddress ca, int shift) {
+        return new CellAddress(ca.getRow(), ca.getColumn() + shift);
+    }
+
+    //  https://stackoverflow.com/a/49153445/548473
+    public static void insertRow(Sheet sheet, int rowNum) {
+        Row templateRow = sheet.getRow(rowNum);
+        if (sheet.getLastRowNum() > rowNum) {
+            sheet.shiftRows(rowNum + 1, sheet.getLastRowNum(), 1);
+        }
+        Row newRow = sheet.createRow(rowNum + 1);
+        templateRow.cellIterator().forEachRemaining(
+                cell -> newRow.createCell(cell.getColumnIndex()).setCellStyle(cell.getCellStyle())
+        );
+    }
+
+    //    https://www.tabnine.com/code/java/methods/org.apache.poi.hssf.usermodel.HSSFSheet/removeRow
+    public static void removeRow(Sheet sheet, int rowNum) {
+        int lastRowNum = sheet.getLastRowNum();
+        if (rowNum >= 0 && rowNum < lastRowNum) {
+            sheet.shiftRows(rowNum + 1, lastRowNum, -1);
+        } else if (rowNum == lastRowNum) {
+            sheet.removeRow(sheet.getRow(rowNum));
+        }
     }
 }
