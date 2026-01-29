@@ -6,6 +6,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.xml.sax.SAXException;
+import ru.javaops.docjava.excel.ExcelJxlsUtil;
 import ru.javaops.docjava.excel.ExcelPoiUtil;
 import ru.javaops.docjava.pdf.ITextPdfUtil;
 import ru.javaops.docjava.pdf.PdfFopUtil;
@@ -88,5 +89,14 @@ public class Commands {
             @ShellOption(value = {"filter", "-f"}, help = "Filter params", defaultValue = "") List<String> params,
             @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) throws JAXBException, IOException {
         ExcelPoiUtil.convert(inputFile, templateFile, outputFile, parseParams(params));
+    }
+
+    @ShellMethod(key = "jxls", value = "Convert XML to Excel via Apache Jxls")
+    public void excelJxlsConvert(
+            @ShellOption(value = {"input", "-i"}, help = "Input file") File inputFile,
+            @ShellOption(value = {"template", "-t"}, help = "Transform template file") File templateFile,
+            @ShellOption(value = {"filter", "-f"}, help = "Filter params", defaultValue = "") List<String> params,
+            @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) throws JAXBException, IOException {
+        ExcelJxlsUtil.convert(inputFile, templateFile, outputFile, parseParams(params));
     }
 }

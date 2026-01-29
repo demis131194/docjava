@@ -18,6 +18,7 @@ Commands:
     pdf-fop: Convert XML to PDF via Apache FOP
     iText: Convert XML to PDF via iText
     excel-poi: Convert XML to Excel via Apache POI
+    jxls: Convert XML to Excel via Apache Jxls
           
 Parameters:
   -i (input) Input file
