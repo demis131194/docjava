@@ -23,7 +23,8 @@
         <jaxb.version>4.0.3</jaxb.version>
         <saxon.version>12.3</saxon.version>
         <fop.version>2.9</fop.version>
-        <itextpdf.version>8.0.1</itextpdf.version>
+        <itextpdf.version>8.0.4</itextpdf.version>
+        <html2pdf.version>5.0.4</html2pdf.version>
         <apache-poi.version>5.2.3</apache-poi.version>
         <jxls.version>2.13.0</jxls.version>
     </properties>
@@ -73,6 +74,12 @@
             <artifactId>itext-core</artifactId>
             <version>${itextpdf.version}</version>
             <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>html2pdf</artifactId>
+            <version>${html2pdf.version}</version>
         </dependency>
 
         <!-- Apache POI -->

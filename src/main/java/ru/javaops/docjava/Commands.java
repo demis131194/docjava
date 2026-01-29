@@ -1,5 +1,6 @@
 package ru.javaops.docjava;
 
+import com.itextpdf.html2pdf.HtmlConverter;
 import jakarta.xml.bind.JAXBException;
 import org.apache.fop.apps.FOPException;
 import org.springframework.shell.standard.ShellComponent;
@@ -98,5 +99,14 @@ public class Commands {
             @ShellOption(value = {"filter", "-f"}, help = "Filter params", defaultValue = "") List<String> params,
             @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) throws JAXBException, IOException {
         ExcelJxlsUtil.convert(inputFile, templateFile, outputFile, parseParams(params));
+    }
+
+    @ShellMethod(key = "html2pdf", value = "Convert HTML to PDF via iTextPdf")
+    public void htmlPdfConvert(
+            @ShellOption(value = {"input", "-i"}, help = "Input HTML file") File inputHtmlFile,
+            @ShellOption(value = {"output", "-o"}, help = "Output file") File outputFile) throws IOException {
+//      https://itextpdf.com/products/convert-html-css-to-pdf-pdfhtml
+        HtmlConverter.convertToPdf(inputHtmlFile, outputFile);
+        System.out.println("Convert HTML to PDF completed successfully, result in " + outputFile.getAbsolutePath());
     }
 }
