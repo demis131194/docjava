@@ -15,7 +15,10 @@ public class ExcelJxlsUtil {
     public void convert(File inputFile, File templateFile, File outputFile, Map<String, Object> params) throws JAXBException, IOException {
         List<User> users = JaxbUtil.unmarshalAndFilter(inputFile, params).getUsers().getUser();
         ExcelJxlsProcessor processor = ExcelJxlsProcessor.of(templateFile);
-        processor.process(outputFile);
+        processor.process(outputFile, ctx -> {
+            ctx.putVar("users", users);
+            ctx.putVar("sheetNames", users.stream().map(User::getEmail).toList());
+        });
         System.out.println("Convert to Excel completed successfully, result in " + outputFile.getAbsolutePath());
     }
 }

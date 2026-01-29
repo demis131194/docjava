@@ -1,10 +1,14 @@
 package ru.javaops.docjava.excel;
 
-import java.io.File;
-import java.io.IOException;
+import org.jxls.common.Context;
+import org.jxls.util.JxlsHelper;
+
+import java.io.*;
+import java.util.function.Consumer;
 
 public class ExcelJxlsProcessor {
     private final File templateFile;
+    private final JxlsHelper jxlsHelper = JxlsHelper.getInstance();
 
     public static ExcelJxlsProcessor of(File templateFile) throws IOException {
         return new ExcelJxlsProcessor(templateFile);
@@ -14,6 +18,11 @@ public class ExcelJxlsProcessor {
         this.templateFile = templateFile;
     }
 
-    public void process(File outputFile) {
+    public void process(File outputFile, Consumer<Context> contextConsumer) throws IOException {
+        try (InputStream is = new FileInputStream(templateFile); OutputStream os = new FileOutputStream(outputFile)) {
+            Context context = new Context();
+            contextConsumer.accept(context);
+            jxlsHelper.processTemplate(is, os, context);
+        }
     }
 }
